@@ -15,13 +15,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual(parse_date("19 04 2017"), {datetime.date(2017, 4, 19)})
 
     def test_unambiguous_dd_mm_yyyy(self):
-        self.assertEqual(parse_date("28-12-1962"), {datetime.date(1962, 12, 28)})
         self.assertEqual(parse_date("28-12-0062"), {datetime.date(62, 12, 28)})
+        self.assertEqual(parse_date("28-12-0962"), {datetime.date(962, 12, 28)})
+        self.assertEqual(parse_date("28-12-1962"), {datetime.date(1962, 12, 28)})
+
 
     def test_unambiguous__mm_dd_yyyy(self):
-        self.assertEqual(parse_date("03-15-1753"), {datetime.date(1753, 3, 15)})
-        self.assertEqual(parse_date("3-15-1753"), {datetime.date(1753, 3, 15)})
         self.assertEqual(parse_date("3-15-0053"), {datetime.date(53, 3, 15)})
+        self.assertEqual(parse_date("03-15-0753"), {datetime.date(753, 3, 15)})
+        self.assertEqual(parse_date("3-15-1753"), {datetime.date(1753, 3, 15)})
+
 
     def test_ambiguous_nn_nn_yyyy(self):
         date1 = datetime.date(2078, 8, 7)
@@ -34,8 +37,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(parse_date("7-8-0078"), {date3, date4})
 
     def test_yyyy_mm_dd(self):
-        self.assertEqual(parse_date("1066-04-01"), {datetime.date(1066, 4, 1)})
         self.assertEqual(parse_date("0066-04-01"), {datetime.date(66, 4, 1)})
+        self.assertEqual(parse_date("0166-04-01"), {datetime.date(166, 4, 1)})
+        self.assertEqual(parse_date("1066-04-01"), {datetime.date(1066, 4, 1)})
 
     # yyyy_dd_mm case and thus yyyy_nn_nn ambiguity won't be considered until an real example is found
 
