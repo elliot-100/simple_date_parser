@@ -9,7 +9,7 @@ def parse_date(date_input):
     """ Attempt to derive one or more valid datetime.date object(s) from an input string representing a single date,
         allowing for ambiguity. """
 
-    words = re.split('\W', date_input)[:3]
+    words = re.split('\W', date_input)[:3]  # first 3 words, separated by any punctuation
     word_patterns = []
 
     for i in range(len(words)):
@@ -51,6 +51,4 @@ def parse_date(date_input):
             except ValueError:
                 pass
 
-    outputs = sorted(list(dates))
-
-    return outputs
+    return sorted(list(dates))
