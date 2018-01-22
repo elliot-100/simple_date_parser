@@ -16,7 +16,7 @@ def parse_date(date_input):
         if words[i].isdigit:
             if len(words[i]) <= 2:
                 word_patterns.insert(i, 'nn')
-            elif len(words[i]) == 4:
+            elif len(words[i]) <= 4:
                 word_patterns.insert(i, 'nnnn')
         words[i] = int(words[i])
 

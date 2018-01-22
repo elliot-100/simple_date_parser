@@ -7,7 +7,9 @@ allowing for ambiguity in input.
 
 For example an input of '10/11/1980' might represent 10 November 1980 or 11 October 1980 in different locales.
 
-Currently only supports 'triplet' style inputs, e.g. '1/2/16', '1980-12-31', '20.01.2018'.
+Currently only supports triplet style inputs, e.g. '1/2/16', '1980-12-31', '20.01.2018'.
+
+Two-digit years are currently parsed as literal
 
 Usage
 -----
