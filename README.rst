@@ -2,11 +2,11 @@
 Simple Python date parser
 =========================
 
-Take an an input string representing a single date, and attempt to derive one or more valid datetime.date object(s)
-allowing for ambiguity in input - for example an input of '10/11/1980' might represent 10 November 1980 or 11 October
-1980 in different locales.
+Take an an input string representing a single date, and attempt to derive one or more valid ``datetime.date`` object(s)
+allowing for ambiguity in input - for example an input of ``'10/11/1980'`` might represent 10 November 1980 or
+11 October 1980 in different locales.
 
-Currently only supports triplet style inputs, e.g. '1/2/16', '1980-12-31', '20.01.2018'.
+Currently only supports triplet style inputs, e.g. ``'1/2/16'``, ``'1980-12-31'``, ``'20.01.2018'``.
 
 
 
@@ -28,13 +28,14 @@ Permitted separators: '/', ' ', '-' and other punctuation
 Output
 ------
 
-Sorted list of zero, one or more datetime.date objects
+Sorted list of zero, one or more ``datetime.date`` objects
 
 
 Usage
 -----
+::
 
-parse_date(date_input)
+    parse_date(date_input)
 
 Examples
 --------

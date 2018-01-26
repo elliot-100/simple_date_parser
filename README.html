@@ -363,10 +363,10 @@ ul.auto-toc {
 <div class="document" id="simple-python-date-parser">
 <h1 class="title">Simple Python date parser</h1>
 
-<p>Take an an input string representing a single date, and attempt to derive one or more valid datetime.date object(s)
-allowing for ambiguity in input - for example an input of '10/11/1980' might represent 10 November 1980 or 11 October
-1980 in different locales.</p>
-<p>Currently only supports triplet style inputs, e.g. '1/2/16', '1980-12-31', '20.01.2018'.</p>
+<p>Take an an input string representing a single date, and attempt to derive one or more valid <tt class="docutils literal">datetime.date</tt> object(s)
+allowing for ambiguity in input - for example an input of <tt class="docutils literal">'10/11/1980'</tt> might represent 10 November 1980 or
+11 October 1980 in different locales.</p>
+<p>Currently only supports triplet style inputs, e.g. <tt class="docutils literal">'1/2/16'</tt>, <tt class="docutils literal"><span class="pre">'1980-12-31'</span></tt>, <tt class="docutils literal">'20.01.2018'</tt>.</p>
 <div class="section" id="supported-input-formats">
 <h1>Supported input formats</h1>
 <ul class="simple">
@@ -382,11 +382,13 @@ allowing for ambiguity in input - for example an input of '10/11/1980' might rep
 </div>
 <div class="section" id="output">
 <h1>Output</h1>
-<p>Sorted list of zero, one or more datetime.date objects</p>
+<p>Sorted list of zero, one or more <tt class="docutils literal">datetime.date</tt> objects</p>
 </div>
 <div class="section" id="usage">
 <h1>Usage</h1>
-<p>parse_date(date_input)</p>
+<pre class="literal-block">
+parse_date(date_input)
+</pre>
 </div>
 <div class="section" id="examples">
 <h1>Examples</h1>
