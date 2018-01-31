@@ -54,25 +54,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual(parse_date("11-12-740"), [date1, date2])
 
     def test_unambiguous_dd_mm_yy(self):
-        date1 = datetime.date(34, 2, 20)
-        date2 = datetime.date(1934, 2, 20)
-        date3 = datetime.date(2034, 2, 20)
-        self.assertEqual(parse_date("20-02-34"), [date1, date2, date3])
+        # return only nearest year match to current date
+        self.assertEqual(parse_date("20-02-34"), [datetime.date(2034, 2, 20)])
 
     def test_unambiguous_mm_dd_yy(self):
-        date1 = datetime.date(86, 12, 27)
-        date2 = datetime.date(1986, 12, 27)
-        date3 = datetime.date(2086, 12, 27)
-        self.assertEqual(parse_date("12-27-86"), [date1, date2, date3])
+        # return only nearest year matches to current date
+        self.assertEqual(parse_date("12-27-86"), [datetime.date(1986, 12, 27)])
 
     def test_ambiguous_nn_nn_yy(self):
-        date1 = datetime.date(40, 11, 12)
-        date2 = datetime.date(40, 12, 11)
-        date3 = datetime.date(1940, 11, 12)
-        date4 = datetime.date(1940, 12, 11)
-        date5 = datetime.date(2040, 11, 12)
-        date6 = datetime.date(2040, 12, 11)
-        self.assertEqual(parse_date("11-12-40"), [date1, date2, date3, date4, date5, date6])
+        # return only nearest year matches to current date
+        date1 = datetime.date(2040, 11, 12)
+        date2 = datetime.date(2040, 12, 11)
+        self.assertEqual(parse_date("11-12-40"), [date1, date2])
 
     # def test_unambiguous_yy_mm_dd(self):
     # this case removed until a real example is found
