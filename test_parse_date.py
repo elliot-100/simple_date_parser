@@ -55,27 +55,35 @@ class TestCase(unittest.TestCase):
 
     def test_unambiguous_dd_mm_yy(self):
         # return only nearest year match to current date
-        self.assertEqual(parse_date("20-02-34"), [datetime.date(2034, 2, 20)])
+        # TODO: needs to be updated to reflect current date
+        self.assertEqual(parse_date("20-02-34"), [datetime.date(2034, 2, 20)]) # default behaviour
+        self.assertEqual(parse_date("20-02-34", 0), [datetime.date(2034, 2, 20)])
+
+        # self.assertEqual(parse_date("20-02-34", 1), [datetime.date(2034, 2, 20)])
+        # self.assertEqual(parse_date("20-02-34", 2), [datetime.date(2034, 2, 20)])
 
     def test_unambiguous_mm_dd_yy(self):
         # return only nearest year matches to current date
-        self.assertEqual(parse_date("12-27-86"), [datetime.date(1986, 12, 27)])
+        # TODO: needs to be updated to reflect current date
+        self.assertEqual(parse_date("12-27-86"), [datetime.date(1986, 12, 27)]) # default behaviour
+        self.assertEqual(parse_date("12-27-86", 0), [datetime.date(1986, 12, 27)])
+    #
+    #     self.assertEqual(parse_date("12-27-86", 1), [datetime.date(1986, 12, 27)])
+    #     self.assertEqual(parse_date("12-27-86", 2), [datetime.date(1986, 12, 27)])
 
     def test_ambiguous_nn_nn_yy(self):
-        # return only nearest year matches to current date
         date1 = datetime.date(2040, 11, 12)
         date2 = datetime.date(2040, 12, 11)
-        self.assertEqual(parse_date("11-12-40"), [date1, date2])
+        # return only nearest year matches to current date
+        # TODO: needs to be updated to reflect current date
+        self.assertEqual(parse_date("11-12-40"), [date1, date2]) # default behaviour
+        self.assertEqual(parse_date("11-12-40", 0), [date1, date2])
+    #
+    #     self.assertEqual(parse_date("11-12-40", 1), [date1, date2])
+    #     self.assertEqual(parse_date("11-12-40", 2), [date1, date2])
 
-    # def test_unambiguous_yy_mm_dd(self):
-    # this case removed until a real example is found
-    #     date1 = datetime.date(35, 2, 15)
-    #     date2 = datetime.date(1935, 2, 15)
-    #     date3 = datetime.date(2035, 2, 15)
-    #     self.assertEqual(parse_date("35-2-15"), {date1, date2, date3})
-
-        # yy_dd_mm case and thus yy_nn_nn ambiguity and thus nn_nn_nn ambiguity won't be considered until an real
-        # example is found
+    # yy_dd_mm, yy_mm_dd case and thus yy_nn_nn and nn_nn_nn ambiguity won't be considered until an real # example
+    # is found
 
 
 if __name__ == '__main__':

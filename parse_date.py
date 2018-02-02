@@ -2,10 +2,8 @@
 import re
 import datetime
 
-century_bases = (0, 1900, 2000)
 
-
-def parse_date(date_input):
+def parse_date(date_input, yy_leniency = 0):
     """ Attempt to derive one or more valid datetime.date object(s) from an input string representing a single date,
         allowing for ambiguity. """
 
@@ -21,34 +19,91 @@ def parse_date(date_input):
         words[i] = int(words[i])
 
     dates = set()
+    dates2 = set()
 
     if word_patterns == ['nn', 'nn', 'nnnn']:
         try:
-            dates.add(datetime.date(words[2], words[0], words[1]))  # mm-dd-yyyy
+            # parse input as mm-dd-yyyy
+            dates.add(datetime.date(words[2], words[0], words[1]))
         except ValueError:
             pass
         try:
-            dates.add(datetime.date(words[2], words[1], words[0]))  # dd-mm-yyyy
+            # parse input as dd-mm-yyyy
+            dates.add(datetime.date(words[2], words[1], words[0]))
         except ValueError:
             pass
 
-    if word_patterns == ['nnnn', 'nn', 'nn']:
+    elif word_patterns == ['nnnn', 'nn', 'nn']:
         try:
-            dates.add(datetime.date(words[0], words[1], words[2]))  # yyyy-mm-dd
+            # parse input as yyyy-mm-dd
+            dates.add(datetime.date(words[0], words[1], words[2]))
         except ValueError:
             pass
 
-    if word_patterns == ['nn', 'nn', 'nn']:
-        for cb in century_bases:
-            try:
-                dates.add(datetime.date(cb + words[2], words[1], words[0]))
-                # dd-mm-yy (pre-1000CE), dd-mm-19yy, dd-mm-20yy
-            except ValueError:
-                pass
-            try:
-                dates.add(datetime.date(cb + words[2], words[0], words[1]))
-                # mm-dd-yy (pre-1000CE), mm-dd-19yy, mm-dd-20yy
-            except ValueError:
-                pass
+    elif word_patterns == ['nn', 'nn', 'nn']:
+        today = datetime.date.today()
+        century = today.year // 100 * 100
 
-    return sorted(list(dates))
+        # parse input as dd-mm-nnyy
+
+        try:
+            dates.add(datetime.date(century - 100 + words[2], words[1], words[0]))
+        except ValueError:
+            pass
+
+        try:
+            dates.add(datetime.date(century + words[2], words[1], words[0]))
+        except ValueError:
+            pass
+
+        try:
+            dates.add(datetime.date(century + 100 + words[2], words[1], words[0]))
+        except ValueError:
+            pass
+
+        print('dates: ' + str(dates))
+        if yy_leniency <= 0:
+            dates = list(dates)
+            dates.sort(key=lambda d: abs(d - today))
+            # print('dates sorted: ' + str(dates))
+            if dates:
+                dates = [dates[0]]
+                print('closest: ' + str(dates))
+
+        # parse input as mm-dd-nnyy
+
+        try:
+            dates2.add(datetime.date(century - 100 + words[2], words[0], words[1]))
+        except ValueError:
+            pass
+
+        try:
+            dates2.add(datetime.date(century + words[2], words[0], words[1]))
+        except ValueError:
+            pass
+
+        try:
+            dates2.add(datetime.date(century + 100 + words[2], words[0], words[1]))
+        except ValueError:
+            pass
+
+        print('dates2: ' + str(dates2))
+        if yy_leniency <= 0:
+            dates2 = list(dates2)
+            dates2.sort(key=lambda d: abs(d - today))
+            # print('dates sorted: ' + str(dates))
+            if dates2:
+                dates2 = [dates2[0]]
+                print('closest: ' + str(dates2))
+
+    else:
+        pass # error handling, or just leave blank?
+
+    dates = list(dates)
+    dates2 = list(dates2)
+    return sorted(dates + dates2) # todo isn't already a list?
+
+
+###
+
+print(parse_date('20-02-34'))
