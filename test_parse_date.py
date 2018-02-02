@@ -6,6 +6,7 @@ from parse_date import parse_date
 
 """ Basic date string parsing tests  """
 
+
 class TestCase(unittest.TestCase):
     def test_separators(self):
         self.assertEqual(parse_date("19-04-2017"), [datetime.date(2017, 4, 19)])
@@ -56,7 +57,7 @@ class TestCase(unittest.TestCase):
     def test_unambiguous_dd_mm_yy(self):
         # return only nearest year match to current date
         # TODO: needs to be updated to reflect current date
-        self.assertEqual(parse_date("20-02-34"), [datetime.date(2034, 2, 20)]) # default behaviour
+        self.assertEqual(parse_date("20-02-34"), [datetime.date(2034, 2, 20)])  # default behaviour
         self.assertEqual(parse_date("20-02-34", 0), [datetime.date(2034, 2, 20)])
 
         # self.assertEqual(parse_date("20-02-34", 1), [datetime.date(2034, 2, 20)])
@@ -65,8 +66,9 @@ class TestCase(unittest.TestCase):
     def test_unambiguous_mm_dd_yy(self):
         # return only nearest year matches to current date
         # TODO: needs to be updated to reflect current date
-        self.assertEqual(parse_date("12-27-86"), [datetime.date(1986, 12, 27)]) # default behaviour
+        self.assertEqual(parse_date("12-27-86"), [datetime.date(1986, 12, 27)])  # default behaviour
         self.assertEqual(parse_date("12-27-86", 0), [datetime.date(1986, 12, 27)])
+
     #
     #     self.assertEqual(parse_date("12-27-86", 1), [datetime.date(1986, 12, 27)])
     #     self.assertEqual(parse_date("12-27-86", 2), [datetime.date(1986, 12, 27)])
@@ -76,7 +78,7 @@ class TestCase(unittest.TestCase):
         date2 = datetime.date(2040, 12, 11)
         # return only nearest year matches to current date
         # TODO: needs to be updated to reflect current date
-        self.assertEqual(parse_date("11-12-40"), [date1, date2]) # default behaviour
+        self.assertEqual(parse_date("11-12-40"), [date1, date2])  # default behaviour
         self.assertEqual(parse_date("11-12-40", 0), [date1, date2])
     #
     #     self.assertEqual(parse_date("11-12-40", 1), [date1, date2])

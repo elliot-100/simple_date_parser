@@ -3,7 +3,7 @@ import re
 import datetime
 
 
-def parse_date(date_input, yy_leniency = 0):
+def parse_date(date_input, yy_leniency=0):
     """ Attempt to derive one or more valid datetime.date object(s) from an input string representing a single date,
         allowing for ambiguity. """
 
@@ -61,14 +61,11 @@ def parse_date(date_input, yy_leniency = 0):
         except ValueError:
             pass
 
-        print('dates: ' + str(dates))
         if yy_leniency <= 0:
             dates = list(dates)
             dates.sort(key=lambda d: abs(d - today))
-            # print('dates sorted: ' + str(dates))
             if dates:
                 dates = [dates[0]]
-                print('closest: ' + str(dates))
 
         # parse input as mm-dd-nnyy
 
@@ -87,23 +84,15 @@ def parse_date(date_input, yy_leniency = 0):
         except ValueError:
             pass
 
-        print('dates2: ' + str(dates2))
         if yy_leniency <= 0:
             dates2 = list(dates2)
             dates2.sort(key=lambda d: abs(d - today))
-            # print('dates sorted: ' + str(dates))
             if dates2:
                 dates2 = [dates2[0]]
-                print('closest: ' + str(dates2))
 
     else:
-        pass # error handling, or just leave blank?
+        pass  # TODO: consider error handling
 
     dates = list(dates)
     dates2 = list(dates2)
-    return sorted(dates + dates2) # todo isn't already a list?
-
-
-###
-
-print(parse_date('20-02-34'))
+    return sorted(dates + dates2)
