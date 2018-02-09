@@ -2,6 +2,12 @@
 import re
 import datetime
 
+def attempt_to_create_date(date_list, arg1, arg2, arg3):
+    try:
+        # parse input as mm-dd-yyyy
+        date_list.append(datetime.date(arg1, arg2, arg3))
+    except ValueError:
+        pass
 
 def parse_date(date_input, yy_leniency=0):
     """ Attempt to derive one or more valid datetime.date object(s) from an input string representing a single date,
@@ -9,6 +15,8 @@ def parse_date(date_input, yy_leniency=0):
 
     words = re.split('\W', date_input)[:3]  # first 3 words, separated by any punctuation
     word_patterns = []
+    dates = []
+    extended_dates = []
 
     for i in range(len(words)):
         if words[i].isdigit:
@@ -18,27 +26,16 @@ def parse_date(date_input, yy_leniency=0):
                 word_patterns.insert(i, 'nnnn')
         words[i] = int(words[i])
 
-    dates = set()
-    dates2 = set()
-
     if word_patterns == ['nn', 'nn', 'nnnn']:
-        try:
-            # parse input as mm-dd-yyyy
-            dates.add(datetime.date(words[2], words[0], words[1]))
-        except ValueError:
-            pass
-        try:
+        # parse input as mm-dd-yyyy
+        attempt_to_create_date(dates, words[2], words[0], words[1])
+        if words[0] != words[1]:
             # parse input as dd-mm-yyyy
-            dates.add(datetime.date(words[2], words[1], words[0]))
-        except ValueError:
-            pass
+            attempt_to_create_date(dates, words[2], words[1], words[0])
 
     elif word_patterns == ['nnnn', 'nn', 'nn']:
-        try:
-            # parse input as yyyy-mm-dd
-            dates.add(datetime.date(words[0], words[1], words[2]))
-        except ValueError:
-            pass
+        # parse input as yyyy-mm-dd
+        attempt_to_create_date(dates, words[0], words[1], words[2])
 
     elif word_patterns == ['nn', 'nn', 'nn']:
         today = datetime.date.today()
@@ -46,20 +43,9 @@ def parse_date(date_input, yy_leniency=0):
 
         # parse input as dd-mm-nnyy
 
-        try:
-            dates.add(datetime.date(century - 100 + words[2], words[1], words[0]))
-        except ValueError:
-            pass
-
-        try:
-            dates.add(datetime.date(century + words[2], words[1], words[0]))
-        except ValueError:
-            pass
-
-        try:
-            dates.add(datetime.date(century + 100 + words[2], words[1], words[0]))
-        except ValueError:
-            pass
+        attempt_to_create_date(dates, words[2] + century - 100, words[1], words[0])
+        attempt_to_create_date(dates, words[2] + century, words[1], words[0])
+        attempt_to_create_date(dates, words[2] + century + 100, words[1], words[0])
 
         if yy_leniency <= 0:
             dates = list(dates)
@@ -67,32 +53,27 @@ def parse_date(date_input, yy_leniency=0):
             if dates:
                 dates = [dates[0]]
 
-        # parse input as mm-dd-nnyy
+        dates = list(dates)
+        print('dates' + str(dates))
 
-        try:
-            dates2.add(datetime.date(century - 100 + words[2], words[0], words[1]))
-        except ValueError:
-            pass
+        if words[0] != words[1]:
+            # mm and dd values are distinct
+            # parse input as mm-dd-nnyy
 
-        try:
-            dates2.add(datetime.date(century + words[2], words[0], words[1]))
-        except ValueError:
-            pass
+            attempt_to_create_date(extended_dates, words[2] + century - 100, words[0], words[1])
+            attempt_to_create_date(extended_dates, words[2] + century, words[0], words[1])
+            attempt_to_create_date(extended_dates, words[2] + century + 100, words[0], words[1])
 
-        try:
-            dates2.add(datetime.date(century + 100 + words[2], words[0], words[1]))
-        except ValueError:
-            pass
+            if yy_leniency <= 0:
+                extended_dates = list(extended_dates)
+                extended_dates.sort(key=lambda d: abs(d - today))
+                if extended_dates:
+                    extended_dates = [extended_dates[0]]
 
-        if yy_leniency <= 0:
-            dates2 = list(dates2)
-            dates2.sort(key=lambda d: abs(d - today))
-            if dates2:
-                dates2 = [dates2[0]]
+                extended_dates = list(extended_dates)
+                print('extended_dates' + str(extended_dates))
 
     else:
         pass  # TODO: consider error handling
 
-    dates = list(dates)
-    dates2 = list(dates2)
-    return sorted(dates + dates2)
+    return sorted(dates + extended_dates)

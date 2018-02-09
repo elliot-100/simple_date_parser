@@ -29,9 +29,11 @@ class TestCase(unittest.TestCase):
         date2 = datetime.date(2078, 8, 7)
         self.assertEqual(parse_date("07-08-2078"), [date1, date2])
         self.assertEqual(parse_date("7-8-2078"), [date1, date2])
+
         date3 = datetime.date(178, 7, 8)
         date4 = datetime.date(178, 8, 7)
         self.assertEqual(parse_date("7-8-0178"), [date3, date4])
+
         date5 = datetime.date(78, 7, 8)
         date6 = datetime.date(78, 8, 7)
         self.assertEqual(parse_date("7-8-0078"), [date5, date6])
@@ -59,6 +61,7 @@ class TestCase(unittest.TestCase):
         # TODO: needs to be updated to reflect current date
         self.assertEqual(parse_date("20-02-34"), [datetime.date(2034, 2, 20)])  # default behaviour
         self.assertEqual(parse_date("20-02-34", 0), [datetime.date(2034, 2, 20)])
+        self.assertEqual(parse_date("06-06-95", 0), [datetime.date(1995, 6, 6)]) # todo is this really unambig??
 
         # self.assertEqual(parse_date("20-02-34", 1), [datetime.date(2034, 2, 20)])
         # self.assertEqual(parse_date("20-02-34", 2), [datetime.date(2034, 2, 20)])
@@ -84,7 +87,7 @@ class TestCase(unittest.TestCase):
     #     self.assertEqual(parse_date("11-12-40", 1), [date1, date2])
     #     self.assertEqual(parse_date("11-12-40", 2), [date1, date2])
 
-    # yy_dd_mm, yy_mm_dd case and thus yy_nn_nn and nn_nn_nn ambiguity won't be considered until an real # example
+    # yy_dd_mm, yy_mm_dd and thus yy_nn_nn and nn_nn_nn ambiguity won't be considered until a real example
     # is found
 
 
