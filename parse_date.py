@@ -2,15 +2,24 @@
 import re
 import datetime
 
-century_bases = (0, 1900, 2000)
+
+def attempt_date_append(date_list, year, month, date):
+    """ Wraps datetime.date creation to suppress errors on invalid dates. """
+
+    try:
+        date_list.append(datetime.date(year, month, date))
+    except ValueError:
+        pass
 
 
-def parse_date(date_input):
+def parse_date(date_input, yy_leniency=0):
     """ Attempt to derive one or more valid datetime.date object(s) from an input string representing a single date,
         allowing for ambiguity. """
 
     words = re.split('\W', date_input)[:3]  # first 3 words, separated by any punctuation
     word_patterns = []
+    dates = []
+    dates2 = []
 
     for i in range(len(words)):
         if words[i].isdigit:
@@ -20,35 +29,51 @@ def parse_date(date_input):
                 word_patterns.insert(i, 'nnnn')
         words[i] = int(words[i])
 
-    dates = set()
-
     if word_patterns == ['nn', 'nn', 'nnnn']:
-        try:
-            dates.add(datetime.date(words[2], words[0], words[1]))  # mm-dd-yyyy
-        except ValueError:
-            pass
-        try:
-            dates.add(datetime.date(words[2], words[1], words[0]))  # dd-mm-yyyy
-        except ValueError:
-            pass
+        # parse input as mm-dd-yyyy
+        attempt_date_append(dates, words[2], words[0], words[1])
+        if words[0] != words[1]:
+            # parse input as dd-mm-yyyy
+            attempt_date_append(dates, words[2], words[1], words[0])
 
-    if word_patterns == ['nnnn', 'nn', 'nn']:
-        try:
-            dates.add(datetime.date(words[0], words[1], words[2]))  # yyyy-mm-dd
-        except ValueError:
-            pass
+    elif word_patterns == ['nnnn', 'nn', 'nn']:
+        # parse input as yyyy-mm-dd
+        attempt_date_append(dates, words[0], words[1], words[2])
 
-    if word_patterns == ['nn', 'nn', 'nn']:
-        for cb in century_bases:
-            try:
-                dates.add(datetime.date(cb + words[2], words[1], words[0]))
-                # dd-mm-yy (pre-1000CE), dd-mm-19yy, dd-mm-20yy
-            except ValueError:
-                pass
-            try:
-                dates.add(datetime.date(cb + words[2], words[0], words[1]))
-                # mm-dd-yy (pre-1000CE), mm-dd-19yy, mm-dd-20yy
-            except ValueError:
-                pass
+    elif word_patterns == ['nn', 'nn', 'nn']:
+        today = datetime.date.today()
+        century = today.year // 100 * 100
 
-    return sorted(list(dates))
+        # parse input as dd-mm-nnyy
+
+        attempt_date_append(dates, words[2] + century - 100, words[1], words[0])
+        attempt_date_append(dates, words[2] + century, words[1], words[0])
+        attempt_date_append(dates, words[2] + century + 100, words[1], words[0])
+
+        dates.sort(key=lambda d: abs(d - today))
+
+        if yy_leniency <= 0:
+            dates = dates[0:1]
+        elif yy_leniency == 1:
+            dates = dates[0:2]
+
+        if words[0] != words[1]:
+
+            # mm and dd values are distinct
+            # parse input as mm-dd-nnyy
+
+            attempt_date_append(dates2, words[2] + century - 100, words[0], words[1])
+            attempt_date_append(dates2, words[2] + century, words[0], words[1])
+            attempt_date_append(dates2, words[2] + century + 100, words[0], words[1])
+
+            dates2.sort(key=lambda d: abs(d - today))
+
+            if yy_leniency <= 0:
+                dates2 = dates2[0:1]
+            elif yy_leniency == 1:
+                dates2 = dates2[0:2]
+
+    else:
+        pass
+
+    return sorted(dates + dates2)

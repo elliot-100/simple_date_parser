@@ -363,22 +363,33 @@ ul.auto-toc {
 <div class="document" id="simple-python-date-parser">
 <h1 class="title">Simple Python date parser</h1>
 
-<p>Take an an input string representing a single date, and attempt to derive one or more valid <tt class="docutils literal">datetime.date</tt> object(s)
-allowing for ambiguity in input - for example an input of <tt class="docutils literal">'10/11/1980'</tt> might represent 10 November 1980 or
-11 October 1980 in different locales.</p>
+<p>Takes an an input string representing a single date, and attempts to return one or more valid <tt class="docutils literal">datetime.date</tt> object(s),
+allowing for ambiguity in input.</p>
 <p>Currently only supports triplet style inputs, e.g. <tt class="docutils literal">'1/2/16'</tt>, <tt class="docutils literal"><span class="pre">'1980-12-31'</span></tt>, <tt class="docutils literal">'20.01.2018'</tt>.</p>
+<p>For example:</p>
+<ul class="simple">
+<li>an input of <tt class="docutils literal">'10/11/1980'</tt> might represent 10 November 1980 or 11 October 1980 in different locales</li>
+<li>an input of <tt class="docutils literal">'21/02/32'</tt> might represent 21 February 1932 or 21 February 2032 depending on context</li>
+</ul>
+<p>This is designed primarily to handle user date inputs as text, where if there is ambiguity, the user can be prompted to
+confirm which date they intended: &quot;Did you mean 21 February 1932 or 21 February 2032?&quot;</p>
 <div class="section" id="supported-input-formats">
 <h1>Supported input formats</h1>
 <ul class="simple">
-<li>dd-mm-yyyy</li>
-<li>mm-dd-yyyy</li>
-<li>nn-nn-yyyy (i.e. ambiguous date/month order)</li>
-<li>dd_mm_yy</li>
-<li>mm_dd_yy</li>
-<li>nn_nn_yy (i.e. ambiguous date/month order)</li>
-<li>yyyy-mm-dd</li>
+<li><tt class="docutils literal"><span class="pre">'yyyy-mm-dd'</span></tt></li>
+</ul>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">'dd-mm-yyyy'</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">'mm-dd-yyyy'</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">'nn-nn-yyyy'</span></tt> (i.e. ambiguous date/month order)</li>
+</ul>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">'dd-mm-yy'</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">'mm-dd-yy'</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">'nn-nn-yy'</span></tt> (i.e. ambiguous date/month order)</li>
 </ul>
 <p>Permitted separators: '/', ' ', '-' and other punctuation</p>
+<p>NB <tt class="docutils literal"><span class="pre">'yy-dd-mm'</span></tt>, <tt class="docutils literal"><span class="pre">'yy-mm-dd'</span></tt> and thus <tt class="docutils literal"><span class="pre">'yy-nn-nn'</span></tt> and <tt class="docutils literal"><span class="pre">'nn-nn-nn'</span></tt> ambiguity aren't supported, as no real-world examples have yet been located.</p>
 </div>
 <div class="section" id="output">
 <h1>Output</h1>
@@ -388,23 +399,66 @@ allowing for ambiguity in input - for example an input of <tt class="docutils li
 <h1>Usage</h1>
 <pre class="literal-block">
 parse_date(date_input)
+parse_date(date_input, yy_leniency)
 </pre>
+<p>The optional <tt class="docutils literal">yy_leniency</tt> parameter tunes the range of possible dates returned in response to a two-digit year value.</p>
 </div>
 <div class="section" id="examples">
 <h1>Examples</h1>
+<div class="section" id="unambiguous-dates">
+<h2>Unambiguous dates</h2>
 <pre class="literal-block">
 &gt;&gt;&gt; parse_date('01-01-1723')
 [datetime.date(1723, 1, 1)]
+# 1 January 1723
 
+&gt;&gt;&gt; parse_date('13/05/1966')
+[datetime.date(1966, 5, 13)]
+# 13 May 1966
+
+&gt;&gt;&gt; parse_date('5.13.1966')
+[datetime.date(1966, 5, 13)]
+# Also 13 May 1966
+</pre>
+</div>
+<div class="section" id="day-month-ambiguity">
+<h2>Day-month ambiguity</h2>
+<pre class="literal-block">
 &gt;&gt;&gt; parse_date('05-06-1988')
 [datetime.date(1988, 5, 6), datetime.date(1988, 6, 5)]
-
-&gt;&gt;&gt; parse_date('0001-1-1')
-[datetime.date(1, 1, 1)]
-
-&gt;&gt;&gt; parse_date('1-1-1')
-[datetime.date(1, 1, 1), datetime.date(1901, 1, 1), datetime.date(2001, 1, 1)]
+# 6 May 1988 or 5 June 1988
 </pre>
+</div>
+<div class="section" id="two-digit-year-handling-and-yy-leniency-parameter">
+<h2>Two-digit year handling and <tt class="docutils literal">yy_leniency</tt> parameter</h2>
+<p>By default (or <tt class="docutils literal"><span class="pre">yy_leniency&lt;=0</span></tt>), returns only the closest match to present day, or pair of matches if there's day-month ambiguity.
+This might be desirable behaviour in an input field for a personal calendar application:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; parse_date('14-02-15')
+[datetime.date(2015, 2, 14)]
+# Input parsed as 'dd-mm-yy'
+
+&gt;&gt;&gt; parse_date('05-8-21')
+[datetime.date(2021, 5, 8), datetime.date(2021, 8, 5)]
+# Input parsed as 'dd-mm-yy' or 'mm-dd-yy'
+</pre>
+<p><tt class="docutils literal">yy_leniency=1</tt> returns also the next closest matches to present day, in the past or future.
+This might be desirable behaviour in an input field for a loan application:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; parse_date('14-02-15', yy_leniency=1)
+[datetime.date(2015, 2, 14), datetime.date(2115, 2, 14)]
+&gt;&gt;&gt; parse_date('05-8-21', yy_leniency=1)
+[datetime.date(1921, 5, 8), datetime.date(1921, 8, 5), datetime.date(2021, 5, 8), datetime.date(2021, 8, 5)]
+</pre>
+<p><tt class="docutils literal"><span class="pre">yy_leniency&gt;=2</span></tt> returns three or six closest matches to present day:
+This might be desirable behaviour in an input field for a genealogy application:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; parse_date('14-02-15', yy_leniency=2)
+[datetime.date(1915, 2, 14), datetime.date(2015, 2, 14), datetime.date(2115, 2, 14)]
+&gt;&gt;&gt; parse_date('05-8-21', yy_leniency=2)
+[datetime.date(1921, 5, 8), datetime.date(1921, 8, 5), datetime.date(2021, 5, 8), datetime.date(2021, 8, 5), datetime.date(2121, 5, 8), datetime.date(2121, 8, 5)]
+</pre>
+</div>
 </div>
 </div>
 </body>
