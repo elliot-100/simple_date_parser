@@ -3,10 +3,11 @@ import re
 import datetime
 
 
-def attempt_to_create_date(date_list, arg1, arg2, arg3):
+def attempt_date_append(date_list, year, month, date):
+    """ Wraps datetime.date creation to suppress errors on invalid dates. """
+
     try:
-        # parse input as mm-dd-yyyy
-        date_list.append(datetime.date(arg1, arg2, arg3))
+        date_list.append(datetime.date(year, month, date))
     except ValueError:
         pass
 
@@ -30,14 +31,14 @@ def parse_date(date_input, yy_leniency=0):
 
     if word_patterns == ['nn', 'nn', 'nnnn']:
         # parse input as mm-dd-yyyy
-        attempt_to_create_date(dates, words[2], words[0], words[1])
+        attempt_date_append(dates, words[2], words[0], words[1])
         if words[0] != words[1]:
             # parse input as dd-mm-yyyy
-            attempt_to_create_date(dates, words[2], words[1], words[0])
+            attempt_date_append(dates, words[2], words[1], words[0])
 
     elif word_patterns == ['nnnn', 'nn', 'nn']:
         # parse input as yyyy-mm-dd
-        attempt_to_create_date(dates, words[0], words[1], words[2])
+        attempt_date_append(dates, words[0], words[1], words[2])
 
     elif word_patterns == ['nn', 'nn', 'nn']:
         today = datetime.date.today()
@@ -45,39 +46,34 @@ def parse_date(date_input, yy_leniency=0):
 
         # parse input as dd-mm-nnyy
 
-        attempt_to_create_date(dates, words[2] + century - 100, words[1], words[0])
-        attempt_to_create_date(dates, words[2] + century, words[1], words[0])
-        attempt_to_create_date(dates, words[2] + century + 100, words[1], words[0])
+        attempt_date_append(dates, words[2] + century - 100, words[1], words[0])
+        attempt_date_append(dates, words[2] + century, words[1], words[0])
+        attempt_date_append(dates, words[2] + century + 100, words[1], words[0])
 
-        # dates = list(dates)
         dates.sort(key=lambda d: abs(d - today))
 
         if yy_leniency <= 0:
             dates = dates[0:1]
         elif yy_leniency == 1:
             dates = dates[0:2]
-        elif yy_leniency >= 2:
-            dates = dates[0:3]
 
         if words[0] != words[1]:
+
             # mm and dd values are distinct
             # parse input as mm-dd-nnyy
 
-            attempt_to_create_date(dates2, words[2] + century - 100, words[0], words[1])
-            attempt_to_create_date(dates2, words[2] + century, words[0], words[1])
-            attempt_to_create_date(dates2, words[2] + century + 100, words[0], words[1])
+            attempt_date_append(dates2, words[2] + century - 100, words[0], words[1])
+            attempt_date_append(dates2, words[2] + century, words[0], words[1])
+            attempt_date_append(dates2, words[2] + century + 100, words[0], words[1])
 
-            # extended_dates = list(extended_dates)
             dates2.sort(key=lambda d: abs(d - today))
 
             if yy_leniency <= 0:
                 dates2 = dates2[0:1]
             elif yy_leniency == 1:
                 dates2 = dates2[0:2]
-            elif yy_leniency >= 2:
-                dates2 = dates2[0:3]
 
     else:
-        pass  # TODO: consider error handling
+        pass
 
     return sorted(dates + dates2)
