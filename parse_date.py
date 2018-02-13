@@ -45,7 +45,6 @@ def parse_date(date_input, yy_leniency=0):
 
         # parse input as dd-mm-nnyy
 
-        attempt_to_create_date(dates, words[2], words[1], words[0])
         attempt_to_create_date(dates, words[2] + century - 100, words[1], words[0])
         attempt_to_create_date(dates, words[2] + century, words[1], words[0])
         attempt_to_create_date(dates, words[2] + century + 100, words[1], words[0])
@@ -57,18 +56,13 @@ def parse_date(date_input, yy_leniency=0):
             dates = dates[0:1]
         elif yy_leniency == 1:
             dates = dates[0:2]
-        elif yy_leniency == 2:
+        elif yy_leniency >= 2:
             dates = dates[0:3]
-        elif yy_leniency == 3:
-            dates = dates[0:4]
-
-        print('dates: ' + str(dates))
 
         if words[0] != words[1]:
             # mm and dd values are distinct
             # parse input as mm-dd-nnyy
 
-            attempt_to_create_date(dates2, words[2], words[0], words[1])
             attempt_to_create_date(dates2, words[2] + century - 100, words[0], words[1])
             attempt_to_create_date(dates2, words[2] + century, words[0], words[1])
             attempt_to_create_date(dates2, words[2] + century + 100, words[0], words[1])
@@ -80,20 +74,10 @@ def parse_date(date_input, yy_leniency=0):
                 dates2 = dates2[0:1]
             elif yy_leniency == 1:
                 dates2 = dates2[0:2]
-            elif yy_leniency == 2:
+            elif yy_leniency >= 2:
                 dates2 = dates2[0:3]
-            elif yy_leniency == 3:
-                dates2 = dates2[0:4]
-
-            print('dates2: ' + str(dates2))
 
     else:
         pass  # TODO: consider error handling
 
-    print('dates+dates2: ' + str(sorted(dates + dates2)))
     return sorted(dates + dates2)
-
-
-######
-
-parse_date("13-13-40", 3)
