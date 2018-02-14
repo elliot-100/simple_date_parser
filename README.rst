@@ -38,12 +38,6 @@ NB ``'yy-dd-mm'``, ``'yy-mm-dd'`` and thus ``'yy-nn-nn'`` and ``'nn-nn-nn'`` amb
 real-world examples have yet been located.
 
 
-Output
-======
-
-Sorted list of zero, one or more ``datetime.date`` objects
-
-
 Usage
 =====
 ::
@@ -53,6 +47,16 @@ Usage
 
 The optional ``yy_leniency`` parameter tunes the range of possible dates returned in response to a two-digit year value.
 
+
+Output
+======
+
+A sorted list containing zero, one, two, three, four or six ``datetime.date`` objects.
+
+Zero objects (i.e. an empty list) if no valid date can be parsed.
+One object if the date is completely unambiguous.
+Two objects if date/month order is ambiguous.
+More objects may be returned if the optional ``yy_leniency`` parameter is > 0.
 
 Examples
 ========
@@ -91,7 +95,7 @@ Day-month ambiguity
 Two-digit year handling and ``yy_leniency`` parameter
 -----------------------------------------------------
 
-When given a two-digit year, default behaviour is to return only the closest valid match to present day,
+When given a two-digit year, default behaviour is to return only the closest past/future match to present day,
 or a pair of matches if there's day-month ambiguity. This is probably expected behaviour the vast majority of the time.
 
 ``yy_leniency <= 0`` will give the same result.
@@ -108,7 +112,7 @@ or a pair of matches if there's day-month ambiguity. This is probably expected b
     # Input parsed as 'dd-mm-yy' or 'mm-dd-yy'
     # 8 May 2021, or 5 August 2021?
 
-``yy_leniency = 1`` returns also the next closest matches to present day, in the past or future.
+``yy_leniency = 1`` returns also the next closest past/future match(es) to present day, two or four in total.
 This might be desirable behaviour in an input field for a loan application.
 
 ::
@@ -124,7 +128,7 @@ This might be desirable behaviour in an input field for a loan application.
     # 8 May 1921, 5 August 1921, 8 May 2021, or 5 August 2021?
 
 
-``yy_leniency >= 2`` returns three or six closest matches to present day.
+``yy_leniency >= 2`` returns also the next closest past/future match(es) to present day, three or six in total.
 This might be desirable behaviour in an input field for a genealogy application.
 
 ::

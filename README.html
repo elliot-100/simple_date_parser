@@ -394,10 +394,6 @@ Response: &quot;Did you mean 21 February 1932, or 21 February 2032?&quot;</p>
 <p>NB <tt class="docutils literal"><span class="pre">'yy-dd-mm'</span></tt>, <tt class="docutils literal"><span class="pre">'yy-mm-dd'</span></tt> and thus <tt class="docutils literal"><span class="pre">'yy-nn-nn'</span></tt> and <tt class="docutils literal"><span class="pre">'nn-nn-nn'</span></tt> ambiguity aren't supported, as no
 real-world examples have yet been located.</p>
 </div>
-<div class="section" id="output">
-<h1>Output</h1>
-<p>Sorted list of zero, one or more <tt class="docutils literal">datetime.date</tt> objects</p>
-</div>
 <div class="section" id="usage">
 <h1>Usage</h1>
 <pre class="literal-block">
@@ -405,6 +401,14 @@ parse_date(date_input)
 parse_date(date_input, yy_leniency)
 </pre>
 <p>The optional <tt class="docutils literal">yy_leniency</tt> parameter tunes the range of possible dates returned in response to a two-digit year value.</p>
+</div>
+<div class="section" id="output">
+<h1>Output</h1>
+<p>A sorted list containing zero, one, two, three, four or six <tt class="docutils literal">datetime.date</tt> objects.</p>
+<p>Zero objects (i.e. an empty list) if no valid date can be parsed.
+One object if the date is completely unambiguous.
+Two objects if date/month order is ambiguous.
+More objects may be returned if the optional <tt class="docutils literal">yy_leniency</tt> parameter is &gt; 0.</p>
 </div>
 <div class="section" id="examples">
 <h1>Examples</h1>
@@ -438,7 +442,7 @@ parse_date(date_input, yy_leniency)
 </div>
 <div class="section" id="two-digit-year-handling-and-yy-leniency-parameter">
 <h2>Two-digit year handling and <tt class="docutils literal">yy_leniency</tt> parameter</h2>
-<p>When given a two-digit year, default behaviour is to return only the closest valid match to present day,
+<p>When given a two-digit year, default behaviour is to return only the closest past/future match to present day,
 or a pair of matches if there's day-month ambiguity. This is probably expected behaviour the vast majority of the time.</p>
 <p><tt class="docutils literal">yy_leniency &lt;= 0</tt> will give the same result.</p>
 <pre class="literal-block">
@@ -452,7 +456,7 @@ or a pair of matches if there's day-month ambiguity. This is probably expected b
 # Input parsed as 'dd-mm-yy' or 'mm-dd-yy'
 # 8 May 2021, or 5 August 2021?
 </pre>
-<p><tt class="docutils literal">yy_leniency = 1</tt> returns also the next closest matches to present day, in the past or future.
+<p><tt class="docutils literal">yy_leniency = 1</tt> returns also the next closest past/future match(es) to present day, two or four in total.
 This might be desirable behaviour in an input field for a loan application.</p>
 <pre class="literal-block">
 &gt;&gt;&gt; parse_date('14-02-15', yy_leniency=1)
@@ -465,7 +469,7 @@ This might be desirable behaviour in an input field for a loan application.</p>
 # Input parsed as 'dd-mm-yy' or 'mm-dd-yy'
 # 8 May 1921, 5 August 1921, 8 May 2021, or 5 August 2021?
 </pre>
-<p><tt class="docutils literal">yy_leniency &gt;= 2</tt> returns three or six closest matches to present day.
+<p><tt class="docutils literal">yy_leniency &gt;= 2</tt> returns also the next closest past/future match(es) to present day, three or six in total.
 This might be desirable behaviour in an input field for a genealogy application.</p>
 <pre class="literal-block">
 &gt;&gt;&gt; parse_date('14-02-15', yy_leniency=2)
