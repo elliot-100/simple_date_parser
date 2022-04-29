@@ -1,6 +1,6 @@
 # coding=utf-8
-import unittest
 import datetime
+import unittest
 
 from parse_date import parse_date
 
@@ -8,7 +8,6 @@ from parse_date import parse_date
 
 
 class TestCase(unittest.TestCase):
-
     def test_separators(self):
         self.assertEqual(parse_date("19-04-2017"), [datetime.date(2017, 4, 19)])
         self.assertEqual(parse_date("19.04.2017"), [datetime.date(2017, 4, 19)])
@@ -44,7 +43,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(parse_date("0166-04-01"), [datetime.date(166, 4, 1)])
         self.assertEqual(parse_date("1066-04-01"), [datetime.date(1066, 4, 1)])
 
-    # yyyy_dd_mm case and thus yyyy_nn_nn ambiguity won't be considered until an real example is found
+    # yyyy_dd_mm case (and thus yyyy_nn_nn ambiguity) won't be considered until a real
+    # example is found
 
     def test_unambiguous_dd_mm_yyy(self):
         self.assertEqual(parse_date("20-02-234"), [datetime.date(234, 2, 20)])
@@ -63,8 +63,9 @@ class TestCase(unittest.TestCase):
         date3 = datetime.date(2034, 2, 20)
         date4 = datetime.date(2134, 2, 20)
 
-        # return only closest match to present ...
-        self.assertEqual(parse_date("20-02-34"), [date3])  # check default behaviour
+        # return only closest match to present (default behaviour)
+        self.assertEqual(parse_date("20-02-34"), [date3])
+        # ... check default behaviour
         self.assertEqual(parse_date("20-02-34", 0), [date3])
 
         # ... closest 2 matches ...
@@ -111,11 +112,13 @@ class TestCase(unittest.TestCase):
         self.assertEqual(parse_date("11-12-40", 1), [date1, date2, date3, date4])
 
         # ... closest 6 matches ...
-        self.assertEqual(parse_date("11-12-40", 2), [date1, date2, date3, date4, date5, date6])
+        self.assertEqual(
+            parse_date("11-12-40", 2), [date1, date2, date3, date4, date5, date6]
+        )
 
-    # yy_dd_mm, yy_mm_dd and thus yy_nn_nn and nn_nn_nn ambiguity won't be considered until a real example
-    # is found
+    # yy_dd_mm, yy_mm_dd (and thus yy_nn_nn and nn_nn_nn ambiguity) won't be considered
+    # until a real example is found
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
