@@ -14,12 +14,11 @@ For example:
   - an input of `'21/02/32'` might represent 21 February 1932, or 21
     February 2032 depending on context
 
-This is designed primarily to handle user date inputs (as text, rather
-than a date picker) where if there is ambiguity, the user can be
-prompted to confirm which date they intended, e.g.:
+## Installation
 
-User input: 21/12/32 Response: "Did you mean 21 February 1932, or 21
-February 2032?"
+To install latest from GitHub:
+
+    pip install git+https://github.com/elliot-100/simple_date_parser.git
 
 ## Supported input formats
 
@@ -39,6 +38,7 @@ located.
 
 ## Usage
 
+    from parse_date import parse_date
     parse_date(date_input)
     parse_date(date_input, yy_leniency)
 
