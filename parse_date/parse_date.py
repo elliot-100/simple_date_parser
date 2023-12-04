@@ -55,9 +55,9 @@ def parse_date(date_input, yy_leniency=0):
         dates.sort(key=lambda d: abs(d - today))
 
         if yy_leniency <= 0:
-            dates = dates[0:1]
+            dates = dates[:1]
         elif yy_leniency == 1:
-            dates = dates[0:2]
+            dates = dates[:2]
 
         if words[0] != words[1]:
 
@@ -70,8 +70,8 @@ def parse_date(date_input, yy_leniency=0):
             dates2.sort(key=lambda d: abs(d - today))
 
             if yy_leniency <= 0:
-                dates2 = dates2[0:1]
+                dates2 = dates2[:1]
             elif yy_leniency == 1:
-                dates2 = dates2[0:2]
+                dates2 = dates2[:2]
 
     return sorted(dates + dates2)
